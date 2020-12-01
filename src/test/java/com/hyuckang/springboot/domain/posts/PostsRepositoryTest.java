@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -25,7 +26,6 @@ public class PostsRepositoryTest {
 
     @Test
     public void 게시글저장_불러오기() {
-
         // given
         String title = "테스트 게시글";
         String content = "테스트 본문";
@@ -43,7 +43,30 @@ public class PostsRepositoryTest {
         Assertions.assertThat(posts.getTitle()).isEqualTo(title);
         Assertions.assertThat(posts.getContent()).isEqualTo(content);
         Assertions.assertThat(posts.getAuthor()).isEqualTo("hyuckang15@gmail.com");
+    }
 
+    @Test
+    public void BaseTimeEntity_등록() {
+        // given
+        LocalDateTime now = LocalDateTime.of(2020, 4, 8, 12, 16);
+        postsRepository.save(
+                Posts.builder()
+                .title("title")
+                .content("content")
+                .author("author")
+                .build());
+
+        // when
+        List<Posts> postsList = postsRepository.findAll();
+
+        // then
+        Posts posts = postsList.get(0);
+
+        System.out.println(">>> >>> >>> CreateDate = "+posts.getCreatedDate());
+        System.out.println(">>> >>> >>> ModifiedDate = "+posts.getModifiedDate());
+
+        Assertions.assertThat(posts.getCreatedDate()).isAfter(now);
+        Assertions.assertThat(posts.getModifiedDate()).isAfter(now);
     }
 
 }
